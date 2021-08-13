@@ -3,7 +3,7 @@ Timeflux Plux plugin
 
 This plugin provides a driver to connect to `Plux <https://biosignalsplux.com/>`__ devices.
 
-When connecting to the device for the first time, use the following pairing code is: `123`.
+When connecting to the device for the first time, use the following pairing code: `123`.
 
 Installation
 ------------
