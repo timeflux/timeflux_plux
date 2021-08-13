@@ -12,7 +12,7 @@ import timeflux_plux.helpers.transfer as transfer
 # Load library according to system
 lib = platform.system()
 lib += "ARM" if platform.machine().startswith("arm") else ""
-lib += "64" if sys.maxsize > 2**32 else "32"
+lib += "64" if sys.maxsize > 2 ** 32 else "32"
 if platform.system() == "Windows":
     lib += "_37" if sys.version.startswith("3.7") else "_38"
 if platform.system() == "Darwin":
@@ -26,57 +26,81 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "libs", lib))
 import plux
 
 # Sensor types
-SENSORS = ["UNKNOWN", "EMG", "ECG", "LUX", "EDA", "BVP", "RESP", "XYZ", "SYNC", "EEG", "SYNC_ADAP", "SYNC_LED", "SYNC_SW", "USB", "FORCE", "TEMP", "VPROBE", "BREAKOUT", "SpO2", "GONI", "ACT", "EOG", "EGG"]
+SENSORS = [
+    "UNKNOWN",
+    "EMG",
+    "ECG",
+    "LUX",
+    "EDA",
+    "BVP",
+    "RESP",
+    "XYZ",
+    "SYNC",
+    "EEG",
+    "SYNC_ADAP",
+    "SYNC_LED",
+    "SYNC_SW",
+    "USB",
+    "FORCE",
+    "TEMP",
+    "VPROBE",
+    "BREAKOUT",
+    "SpO2",
+    "GONI",
+    "ACT",
+    "EOG",
+    "EGG",
+]
 
 # Maximum rates
 RATES = [0, 8000, 5000, 4000, 3000, 3000, 2000, 2000, 2000]
 
 # Available transfer functions
-TRANSFER = [f  for f in dir(transfer) if not f.startswith("_")]
+TRANSFER = [f for f in dir(transfer) if not f.startswith("_")]
 
 
 class Plux(Node):
 
     """Plux driver
 
-    This node connects to a BiosignalsPlux device and streams data at a provided rate.
-    It is based on the original BITalino Python library, with some performance
-    improvements and careful timestamping.
+     This node connects to a BiosignalsPlux device and streams data at a provided rate.
+     It is based on the original BITalino Python library, with some performance
+     improvements and careful timestamping.
 
-    Two output streams are provided. The default output is the data read from the
-    analog and digital channels. The ``o_offsets`` output provides continuous offsets
-    between the local time and the estimated device time. This enables drift correction
-    to be performed during post-processing, although no significant drift has been
-    observed during testing.
+     Two output streams are provided. The default output is the data read from the
+     analog and digital channels. The ``o_offsets`` output provides continuous offsets
+     between the local time and the estimated device time. This enables drift correction
+     to be performed during post-processing, although no significant drift has been
+     observed during testing.
 
-    Args:
-        port (string|None): Path to the Plux device.
-            e.g. `xx:xx:xx:xx:xx:xx` (Bluetooth Mac Address), `COMx` (serial port on Windows), `/dev/cu.biosignalsplux-Bluetoot` (serial port on macOS).
-            If not specified, the node will connect to the first detected device.
-        rate (int|None): The device rate in Hz.
-            Maximum value for one channel: `8000`.
-            Maximum value for eight channels: `2000`.
-            If not specified, the rate will be set to the maximum valye allowed for the number of detected sensors.
+     Args:
+         port (string|None): Path to the Plux device.
+             e.g. `xx:xx:xx:xx:xx:xx` (Bluetooth Mac Address), `COMx` (serial port on Windows), `/dev/cu.biosignalsplux-Bluetoot` (serial port on macOS).
+             If not specified, the node will connect to the first detected device.
+         rate (int|None): The device rate in Hz.
+             Maximum value for one channel: `8000`.
+             Maximum value for eight channels: `2000`.
+             If not specified, the rate will be set to the maximum valye allowed for the number of detected sensors.
 
-    Attributes:
-        i (Port): Default input, expects DataFrame.
-        o (Port): Signal converted to meaningful units, provides DataFrame.
-        o_raw (Port): Raw signal, provides DataFrame.
+     Attributes:
+         i (Port): Default input, expects DataFrame.
+         o (Port): Signal converted to meaningful units, provides DataFrame.
+         o_raw (Port): Raw signal, provides DataFrame.
 
-    Example:
-        .. literalinclude:: /../examples/plux.yaml
-           :language: yaml
+     Example:
+         .. literalinclude:: /../examples/plux.yaml
+            :language: yaml
 
-    Notes:
-        * On macOS, device autodetection and MAC addresses seem to work, but data is not actually streamed. Use the serial port instead.
-        * Multiple sensors of the same type are currenly not supported.
-        * For sensors that return multiple channels (accelerator for example), only the first one is available.
+     Notes:
+         * On macOS, device autodetection and MAC addresses seem to work, but data is not actually streamed. Use the serial port instead.
+         * Multiple sensors of the same type are currenly not supported.
+         * For sensors that return multiple channels (accelerator for example), only the first one is available.
 
-   References:
-        * `Official (outdated) API documentation <https://biosignalsplux.com/downloads/apis/python-api-docs/`_
-        * `Official libraries <https://github.com/biosignalsplux/python-samples/tree/master/PLUX-API-Python3>`_
-        * `Discussion about sensor detection mapping <https://github.com/biosignalsplux/python-samples/issues/8>`_
-        * `Helpful examples on how to write transfer functions <https://github.com/biosignalsplux/biosignalsnotebooks>`_
+    References:
+         * `Official (outdated) API documentation <https://biosignalsplux.com/downloads/apis/python-api-docs/`_
+         * `Official libraries <https://github.com/biosignalsplux/python-samples/tree/master/PLUX-API-Python3>`_
+         * `Discussion about sensor detection mapping <https://github.com/biosignalsplux/python-samples/issues/8>`_
+         * `Helpful examples on how to write transfer functions <https://github.com/biosignalsplux/biosignalsnotebooks>`_
     """
 
     def __init__(self, address=None, rate=None):
@@ -85,7 +109,7 @@ class Plux(Node):
         if address is None:
             devices = plux.BaseDev.findDevices()
             for device in devices:
-                if (device[1] == "biosignalsplux"):
+                if device[1] == "biosignalsplux":
                     address = device[0]
                     break
 
@@ -139,7 +163,6 @@ class Plux(Node):
         self.device.lock = Lock()
         self.thread = Thread(target=self.device.loop).start()
 
-
     def update(self):
         """Update outputs"""
 
@@ -165,7 +188,7 @@ class Plux(Node):
     def terminate(self):
         """Cleanup"""
         self.device.exit = True
-        sleep(.1)
+        sleep(0.1)
         self.device.stop()
         self.device.close()
 
@@ -178,7 +201,7 @@ class Plux(Node):
             "name": properties["uid"],
             "firmware_version": f"{fw_version[0]}.{fw_version[1]}",
             "hardware_version": f"{hw_version[0]}.{hw_version[1]}",
-            "battery_level": f"{self.device.getBattery()}%"
+            "battery_level": f"{self.device.getBattery()}%",
         }
 
     def convert(self, samples):
@@ -191,12 +214,11 @@ class Plux(Node):
         # Apply transfer function to each identified channel
         signals = samples.copy()
         for channel, function in self.functions.items():
-            signals[:,channel] = getattr(transfer, function)(signals[:,channel])
+            signals[:, channel] = getattr(transfer, function)(signals[:, channel])
         return signals
 
 
 class Device(plux.SignalsDev):
-
     def __init__(self, address):
         plux.MemoryDev.__init__(address)
         self.time = None
