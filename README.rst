@@ -1,8 +1,9 @@
-An example Timeflux plugin
-==========================
+Timeflux Plux plugin
+====================
 
-This is an example plugin that provides a few simple demonstration nodes. Use it as a template
-to develop your own plugins.
+This plugin provides a driver to connect to `BITalino <https://biosignalsplux.com/>`__ devices.
+
+When connecting to the device for the first time, use the following pairing code is: `123`.
 
 Installation
 ------------
@@ -14,4 +15,4 @@ You can then install this plugin in the `timeflux` environment:
 ::
 
     $ conda activate timeflux
-    $ pip install timeflux_example
+    $ pip install timeflux_bitalino

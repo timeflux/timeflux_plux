@@ -1,0 +1,47 @@
+graphs:
+
+  - id: acquisition
+    nodes:
+    - id: plux
+      module: timeflux_plux.nodes.driver
+      class: Plux
+      params:
+        address: /dev/cu.biosignalsplux-Bluetoot
+        rate: 1000
+    - id: pub_raw
+      module: timeflux.nodes.zmq
+      class: Pub
+      params:
+        topic: raw
+    - id: pub_converted
+      module: timeflux.nodes.zmq
+      class: Pub
+      params:
+        topic: converted
+    edges:
+    - source: plux:raw
+      target: pub_raw
+    - source: plux
+      target: pub_converted
+    rate: 1
+
+  - id: display
+    nodes:
+    - id: subscribe
+      module: timeflux.nodes.zmq
+      class: Sub
+      params:
+        topics: [ converted ]
+    - id: debug
+      module: timeflux.nodes.debug
+      class: Display
+    edges:
+      - source: subscribe:converted
+        target: debug
+    rate: 1
+
+  - id: broker
+    nodes:
+    - id: broker
+      module: timeflux.nodes.zmq
+      class: Broker
