@@ -35,3 +35,8 @@ def PZT(signal):
 def EEG(signal):
     """EEG value in microvolt (𝜇𝑉)"""
     return ((((signal / 2 ** RESOLUTION) - 0.5) * VCC) / 40000) * 1e-6
+
+
+def LUX(signal):
+    """LUX normalized value (0-1)"""
+    return signal / 2 ** RESOLUTION
