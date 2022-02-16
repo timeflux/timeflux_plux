@@ -12,7 +12,7 @@ import timeflux_plux.helpers.transfer as transfer
 # Load library according to system
 _lib = platform.system()
 _lib += "ARM" if platform.machine().startswith("arm") else ""
-_lib += "64" if sys.maxsize > 2 ** 32 else "32"
+_lib += "64" if sys.maxsize > 2**32 else "32"
 if platform.system() in ("Windows", "Darwin"):
     _version = sys.version.split(".")
     _lib += f"_{''.join(sys.version.split('.')[0:2])}"
