@@ -13,15 +13,9 @@ import timeflux_plux.helpers.transfer as transfer
 _lib = platform.system()
 _lib += "ARM" if platform.machine().startswith("arm") else ""
 _lib += "64" if sys.maxsize > 2 ** 32 else "32"
-if platform.system() == "Windows":
-    _lib += "_37" if sys.version.startswith("3.7") else "_38"
-if platform.system() == "Darwin":
-    if sys.version.startswith("3.7"):
-        _lib += "_37"
-    elif sys.version.startswith("3.8"):
-        _lib += "_38"
-    else:
-        _lib += "_39"
+if platform.system() in ("Windows", "Darwin"):
+    _version = sys.version.split(".")
+    _lib += f"_{''.join(sys.version.split('.')[0:2])}"
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "libs", _lib))
 import plux
 
